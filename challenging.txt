@@ -1,9 +1,8 @@
-Docker_Image_and_Tag_Name="[IMAGE WITH TAG]"
-REPOSITORY=""
-PROJECT_ID=""
+Task 1. Create a Docker image and store the Dockerfile
 
------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Task 1:-
+Docker_Image_and_Tag_Name="[IMAGE WITH TAG]"
+REPOSITORY="[REPOSITORY NAME]"
+PROJECT_ID="[PROJECT ID]"
 
 gcloud auth list
 gsutil cat gs://cloud-training/gsp318/marking/setup_marking_v2.sh | bash
@@ -22,9 +21,8 @@ cd marking
 ./step1_v2.sh
 
 
------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Task 2. Test the created Docker image
 
-Task 2:-
 cd ..
 cd valkyrie-app
 docker run -p 8080:8080 $Docker_Image_and_Tag_Name &
@@ -34,9 +32,7 @@ cd marking
 bash ~/marking/step2_v2.sh
 
 
------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Task 3:-
+Task 3. Push the Docker image to the Artifact Registry
 
 cd ..
 cd valkyrie-app
@@ -44,27 +40,18 @@ cd valkyrie-app
 gcloud artifacts repositories create $REPOSITORY \
     --repository-format=docker \
     --location=us-central1 \
-    --description="subcribe to quciklab" \
+    --description="SUBSCRIBE to Quick GCP LAB" \
     --async 
 
 gcloud auth configure-docker us-central1-docker.pkg.dev
-
 docker images
-
------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 docker tag <Image_ID> us-central1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$Docker_Image_and_Tag_Name
 
 docker push us-central1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$Docker_Image_and_Tag_Name
 
------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-Task 4:-
-
 sed -i s#IMAGE_HERE#us-central1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$Docker_Image_and_Tag_Name#g k8s/deployment.yaml
 
 gcloud container clusters get-credentials valkyrie-dev --zone us-east1-d
 kubectl create -f k8s/deployment.yaml
-kubectl create -f k8s/service.yam
+kubectl create -f k8s/service.yaml
